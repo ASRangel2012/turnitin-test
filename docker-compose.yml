@@ -1,0 +1,43 @@
+version: '3'
+services:
+  react-frontend:
+    build:
+      context: ./react-frontend
+      dockerfile: Dockerfile
+    environment:
+     - WDS_SOCKET_PORT=8043
+     - CHOKIDAR_USEPOLLING=true
+     - CHOKIDAR_INTERVAL=10
+    ports:
+      - "8043:3000"
+    volumes:
+      - ./react-frontend/src:/app/src
+      - ./react-frontend/public:/app/public
+  java-edge:
+    build:
+      context: ./java-edge
+      dockerfile: Dockerfile
+    environment:
+      - BACKEND_HOST=http://php-backend
+    ports:
+      - "8040:8080"
+      - "5045:5005"
+  php-backend:
+    build:
+      context: ./php-backend
+      dockerfile: Dockerfile
+    ports:
+      - 8041:80
+    volumes:
+      - ./php-backend/src:/srv/app
+
+  db:
+    image: postgres:15.3
+    volumes:
+      - ./php-backend/db:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5439:5432"

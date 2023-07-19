@@ -1,0 +1,12 @@
+version: '3'
+services:
+  java-edge:
+    build:
+      context: ./java-edge
+      dockerfile: Dockerfile
+    environment:
+      - BACKEND_HOST=http://php-backend
+    command: ["gradle", "test", "--rerun"]
+    ports:
+      - "8040:8080"
+      - "5045:5005"
